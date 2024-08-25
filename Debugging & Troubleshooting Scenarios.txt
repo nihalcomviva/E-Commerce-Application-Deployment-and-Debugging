@@ -1,0 +1,43 @@
+1. Frontend Accessibility
+Issue: The frontend service is not accessible externally post-deployment.
+
+Task: Diagnose the networking and Ingress configuration to ensure the frontend is reachable and performs as expected.
+
+
+
+Check Deployment and Service Status:
+kubectl get deployments -n ecommerce
+kubectl get services -n ecommerce
+kubectl get pods -n ecommerce
+
+Verify Service Type and Ports:
+kubectl describe service frontend-service -n ecommerce
+
+Test External Access:
+curl http://<node-ip>:30080
+Check Logs:
+kubectl logs <frontend-pod-name> -n ecommerce
+Inspect Ingress (if applicable):
+kubectl get ingress -n ecommerce
+kubectl describe ingress <ingress-name> -n ecommerce
+
+2. Intermittent Backend-Database Connectivity
+Issue: The backend services occasionally lose connection to the MongoDB cluster, causing request failures.
+
+Task: Investigate and resolve potential causes such as network policies, service discovery issues, or MongoDB configuration.
+
+
+
+Check Backend and MongoDB Logs:
+kubectl logs <backend-pod-name> -n ecommerce
+kubectl logs <mongodb-pod-name> -n ecommerce
+
+Verify MongoDB Service and Endpoints:
+kubectl get services -n ecommerce
+kubectl get endpoints -n ecommerce
+Inspect Network Policies:
+kubectl get networkpolicies -n ecommerce
+
+Test Connectivity:
+kubectl exec -it <backend-pod-name> -n ecommerce -- /bin/sh
+nc -zv <mongodb-service-name> 27017

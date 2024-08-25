@@ -2,9 +2,7 @@
 Issue: The frontend service is not accessible externally post-deployment.
 
 Task: Diagnose the networking and Ingress configuration to ensure the frontend is reachable and performs as expected.
-
-
-
+Steps:
 Check Deployment and Service Status:
 kubectl get deployments -n ecommerce
 kubectl get services -n ecommerce
@@ -25,8 +23,7 @@ kubectl describe ingress <ingress-name> -n ecommerce
 Issue: The backend services occasionally lose connection to the MongoDB cluster, causing request failures.
 
 Task: Investigate and resolve potential causes such as network policies, service discovery issues, or MongoDB configuration.
-
-
+Steps:
 
 Check Backend and MongoDB Logs:
 kubectl logs <backend-pod-name> -n ecommerce
@@ -41,3 +38,30 @@ kubectl get networkpolicies -n ecommerce
 Test Connectivity:
 kubectl exec -it <backend-pod-name> -n ecommerce -- /bin/sh
 nc -zv <mongodb-service-name> 27017
+
+
+3. Order Processing Delays
+Issue: Users report delays in order processing, suspecting issues with the RabbitMQ message queue.
+
+Task: Analyze and optimize the message queue setup to ensure efficient message processing and minimal latency.
+
+Steps:
+
+Check RabbitMQ Status:
+kubectl get pods -l app=rabbitmq -n ecommerce
+kubectl get services -l app=rabbitmq -n ecommerce
+
+Inspect RabbitMQ Logs:
+kubectl logs <rabbitmq-pod-name> -n ecommerce
+
+Monitor RabbitMQ Performance:
+Use RabbitMQ management tools (e.g., RabbitMQ Management Plugin).
+Review Resource Limits:
+kubectl describe pod <rabbitmq-pod-name> -n ecommerce
+
+Analyze Queue Configuration:
+kubectl exec -it <rabbitmq-pod-name> -n ecommerce -- /bin/sh
+rabbitmqctl list_queues
+
+Test Message Flow:
+Send and consume messages manually.

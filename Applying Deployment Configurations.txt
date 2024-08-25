@@ -1,0 +1,39 @@
+1. Create the Namespace
+
+kubectl create namespace ecommerce
+2. Apply the Configurations
+
+Apply the Frontend Deployment and Service:
+
+kubectl apply -f frontend/deployment.yaml -n ecommerce
+kubectl apply -f frontend/service.yaml -n ecommerce
+kubectl apply -f frontend/frontend-hpa.yaml -n ecommerce
+kubectl apply -f frontend/configmap.yaml -n ecommerce
+
+
+Apply the Backend Deployment and Service:
+
+kubectl apply -f backend/deployment.yaml -n ecommerce
+kubectl apply -f backend/service.yaml -n ecommerce
+kubectl apply -f backend/backend-hpa.yaml -n ecommerce
+kubectl apply -f backend/configmap.yaml -n ecommerce
+kubectl apply -f backend/secret.yaml -n ecommerce
+
+
+Apply MongoDB Deployment and Service:
+
+kubectl apply -f mongodb/deployment.yaml -n ecommerce
+kubectl apply -f mongodb/service.yaml -n ecommerce
+kubectl apply -f mongodb/persistent-volume.yaml -n ecommerce
+kubectl apply -f mongodb/persistent-volume-claim.yaml -n ecommerce
+
+
+Apply RabbitMQ Deployment and Service:
+
+kubectl apply -f rabbitmq/deployment.yaml -n ecommerce
+kubectl apply -f rabbitmq/service.yaml -n ecommerce
+kubectl apply -f rabbitmq/persistent-volume.yaml -n ecommerce
+kubectl apply -f rabbitmq/persistent-volume-claim.yaml -n ecommerce
+
+Apply Secrets:
+kubectl apply -f secrets/ecr-secret.yaml

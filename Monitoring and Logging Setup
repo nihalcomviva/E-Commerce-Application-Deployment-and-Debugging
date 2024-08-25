@@ -1,0 +1,129 @@
+1. Monitoring Solution
+1.1 Integrate Prometheus and Grafana
+Prometheus and Grafana are widely used for monitoring and visualization in Kubernetes environments. The kube-prometheus-stack Helm chart provides a comprehensive solution that includes both Prometheus and Grafana.
+
+1.1.1 Add Helm Repository
+First, add the Prometheus Helm repository and update your local Helm chart cache:
+
+
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+1.1.2 Install the Helm Chart
+Install the kube-prometheus-stack chart to deploy Prometheus, Grafana, and related components:
+
+
+
+helm install monitoring-stack prometheus-community/kube-prometheus-stack --namespace monitor --create-namespace
+1.1.3 Verify Installation
+Check the status of the deployed components:
+
+
+
+kubectl get all -n monitor
+1.1.4 Access Prometheus and Grafana
+Retrieve the service details to access Prometheus and Grafana:
+
+
+
+kubectl get svc -n monitor
+Grafana Access:
+
+If Grafana is exposed as a LoadBalancer or NodePort, use the external IP or port to access the Grafana UI. Retrieve the default admin password:
+
+
+
+kubectl get secret --namespace monitor monitoring-stack-grafana -o jsonpath="{.data.admin-password}" | base64 --decode
+Log in to Grafana with the username admin and the retrieved password.
+
+Prometheus Access:
+
+Access Prometheus via its service details obtained from the kubectl get svc command.
+
+1.2 Customize Configuration
+Create a values.yaml file to customize the deployment:
+
+yaml
+
+# values.yaml
+grafana:
+  adminPassword: 'your-grafana-password'
+  service:
+    type: LoadBalancer
+
+prometheus:
+  prometheusSpec:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 200Mi
+Install with custom values:
+
+
+
+helm install monitoring-stack prometheus-community/kube-prometheus-stack --namespace monitor --create-namespace -f values.yaml
+2. Logging Solution
+2.1 Set Up ELK Stack
+The ELK stack (Elasticsearch, Logstash, and Kibana) provides powerful logging capabilities for aggregating and analyzing logs.
+
+2.1.1 Add Elastic Helm Charts Repository
+Add the Elastic Helm repository and update your local Helm chart cache:
+
+
+
+helm repo add elastic https://helm.elastic.co
+helm repo update
+2.1.2 Install Elasticsearch
+Deploy Elasticsearch using Helm:
+
+
+
+helm install elasticsearch elastic/elasticsearch --namespace elk --create-namespace
+2.1.3 Install Logstash
+Deploy Logstash and configure it to send logs to Elasticsearch. Create a values.yaml file for Logstash with the necessary configurations:
+
+yaml
+
+# logstash-values.yaml
+logstash:
+  config:
+    logstash.yml: |
+      http.host: "0.0.0.0"
+    pipelines.yml: |
+      - pipeline.id: main
+        path.config: /usr/share/logstash/pipeline/logstash.conf
+  pipeline:
+    logstash.conf: |
+      input {
+        beats {
+          port => 5044
+        }
+      }
+      output {
+        elasticsearch {
+          hosts => ["http://elasticsearch:9200"]
+        }
+      }
+Deploy Logstash with the custom values:
+
+
+
+helm install logstash elastic/logstash --namespace elk --create-namespace -f logstash-values.yaml
+2.1.4 Install Kibana
+Deploy Kibana using Helm:
+
+
+
+helm install kibana elastic/kibana --namespace elk --create-namespace
+2.1.5 Verify Installation
+Check the status of the deployed ELK components:
+
+
+
+kubectl get all -n elk
+2.1.6 Access Kibana
+Retrieve the service details to access Kibana:
+
+
+
+kubectl get svc -n elk

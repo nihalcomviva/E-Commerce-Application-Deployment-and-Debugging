@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+data:
+  # Add any frontend configuration here
+  REACT_APP_API_URL: "http://backend-service"
